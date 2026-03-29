@@ -73,9 +73,9 @@ def run(
 
     if verbose:
         console.print(
-            f"  Hue: {result.hue}°  "
-            f"Saturation: {result.saturation:.1%}  "
-            f"Lightness: {result.lightness:.1%}"
+            f"  CIE Lab: L*={result.lab_L:.1f}  "
+            f"a*={result.lab_a:.2f}  "
+            f"b*={result.lab_b:.2f}"
         )
 
     table = Table(

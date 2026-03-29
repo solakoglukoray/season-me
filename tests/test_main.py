@@ -3,47 +3,59 @@
 import tempfile
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
 
-from season_me.colors import (
-    SEASON_DESCRIPTIONS,
-    SEASON_PALETTES,
-    classify_season,
-)
+from season_me.colors import SEASON_DESCRIPTIONS, SEASON_PALETTES
 from season_me.main import SeasonResult, analyze
+from season_me.model import predict_season, rgb_pixels_to_lab_mean
 
-# ── classify_season unit tests ──────────────────────────────────────────────
-
-
-def test_classify_spring():
-    # Warm hue (35°), medium-high saturation, light skin
-    assert classify_season(hue=35.0, saturation=0.40, lightness=0.65) == "Spring"
+# ── CIE Lab conversion ───────────────────────────────────────────────────────
 
 
-def test_classify_summer():
-    # Cool hue (5°, pinkish), low saturation, light skin
-    assert classify_season(hue=5.0, saturation=0.20, lightness=0.70) == "Summer"
+def test_lab_conversion_returns_three_values():
+    pixels = np.array([[200, 150, 120]], dtype=np.uint8)
+    lab = rgb_pixels_to_lab_mean(pixels)
+    assert lab.shape == (3,)
 
 
-def test_classify_autumn():
-    # Warm hue (30°), low saturation, deep/medium skin
-    assert classify_season(hue=30.0, saturation=0.25, lightness=0.40) == "Autumn"
+def test_lab_L_in_valid_range():
+    pixels = np.array([[200, 160, 130]] * 10, dtype=np.uint8)
+    lab = rgb_pixels_to_lab_mean(pixels)
+    assert 0.0 <= lab[0] <= 100.0, f"L* out of range: {lab[0]}"
 
 
-def test_classify_winter():
-    # Cool hue (5°, pinkish), higher saturation, deep skin
-    assert classify_season(hue=5.0, saturation=0.55, lightness=0.35) == "Winter"
+def test_lab_warm_tone_positive_b():
+    # Yellow-orange skin tone should have b* > 0 (warm)
+    pixels = np.array([[220, 170, 120]] * 20, dtype=np.uint8)
+    lab = rgb_pixels_to_lab_mean(pixels)
+    assert lab[2] > 0, f"Expected b* > 0 for warm skin, got {lab[2]}"
 
 
-def test_classify_returns_valid_season():
-    for hue in [0, 20, 35, 55, 180, 350]:
-        for sat in [0.1, 0.4, 0.7]:
-            for light in [0.3, 0.55, 0.75]:
-                result = classify_season(hue, sat, light)
-                assert result in {"Spring", "Summer", "Autumn", "Winter"}
+# ── Model prediction ─────────────────────────────────────────────────────────
 
 
-# ── palette and description completeness ───────────────────────────────────
+def test_predict_returns_valid_season():
+    pixels = np.array([[200, 155, 120]] * 50, dtype=np.uint8)
+    season = predict_season(pixels)
+    assert season in {"Spring", "Summer", "Autumn", "Winter"}
+
+
+def test_predict_light_warm_is_spring_or_summer():
+    # Light, warm-toned pixels should classify as Spring (not Autumn/Winter)
+    pixels = np.array([[230, 190, 155]] * 100, dtype=np.uint8)
+    season = predict_season(pixels)
+    assert season in {"Spring", "Summer"}
+
+
+def test_predict_dark_warm_is_autumn():
+    # Deep, warm-toned pixels should map to Autumn
+    pixels = np.array([[140, 95, 65]] * 100, dtype=np.uint8)
+    season = predict_season(pixels)
+    assert season == "Autumn"
+
+
+# ── Palette and description completeness ────────────────────────────────────
 
 
 def test_all_seasons_have_palettes():
@@ -96,12 +108,12 @@ def test_analyze_skin_hex_format():
     assert len(result.skin_tone_hex) == 7
 
 
-def test_analyze_metrics_in_range():
+def test_analyze_lab_metrics_in_range():
     path = _make_image((190, 155, 125))
     result = analyze(path)
-    assert 0.0 <= result.hue <= 360.0
-    assert 0.0 <= result.saturation <= 1.0
-    assert 0.0 <= result.lightness <= 1.0
+    assert 0.0 <= result.lab_L <= 100.0
+    assert -128.0 <= result.lab_a <= 127.0
+    assert -128.0 <= result.lab_b <= 127.0
 
 
 def test_analyze_palette_not_empty():
