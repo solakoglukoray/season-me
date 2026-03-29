@@ -1,0 +1,30 @@
+$ season-me portrait.jpg
+
+Analyzing portrait.jpg...
+
+╭─────────────────── Your Color Season ───────────────────╮
+│                                                          │
+│  Autumn                                                  │
+│                                                          │
+│  Warm, deep, and muted — your natural coloring has       │
+│  golden or earthy undertones with rich, complex tones.   │
+│  Rich, earthy, and muted shades that echo autumn         │
+│  foliage suit you perfectly.                             │
+│                                                          │
+╰──────────────────────────────────────────────────────────╯
+
+Detected skin tone: #c8956a
+
+          Autumn Palette
+┌────────┬──────────────┬──────────┐
+│ Swatch │  Color Name  │ Hex Code │
+├────────┼──────────────┼──────────┤
+│   ██   │ Terracotta   │ #E2725B  │
+│   ██   │ Rust         │ #B7410E  │
+│   ██   │ Olive        │ #808000  │
+│   ██   │ Deep Teal    │ #008080  │
+│   ██   │ Burnt Orange │ #CC5500  │
+│   ██   │ Warm Brown   │ #964B00  │
+│   ██   │ Moss Green   │ #8A9A5B  │
+│   ██   │ Caramel      │ #C68642  │
+└────────┴──────────────┴──────────┘
