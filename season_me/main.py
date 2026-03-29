@@ -39,13 +39,27 @@ def analyze(image_path: str | Path) -> SeasonResult:
     """
     img = np.array(Image.open(image_path).convert("RGB"))
 
+    # Warn on very small images — analysis unreliable below ~400px on short side
+    h_img, w_img = img.shape[:2]
+    if min(h_img, w_img) < 200:
+        raise ValueError(
+            f"Image too small ({w_img}×{h_img}). "
+            "Use a photo at least 400px on the short side for reliable results."
+        )
+
     face_box = detect_face_region(img)
     if face_box is None:
         # No face detected — fall back to center region of image
-        h, w = img.shape[:2]
-        face_box = (w // 4, h // 4, w // 2, h // 2)
+        face_box = (w_img // 4, h_img // 4, w_img // 2, h_img // 2)
 
     skin_pixels = sample_skin_pixels(img, face_box)
+
+    # Cap to 5000 pixels — median is stable with far fewer; avoids skew from
+    # large face boxes that include non-skin boundary pixels
+    if len(skin_pixels) > 5000:
+        rng = np.random.default_rng(42)
+        idx = rng.choice(len(skin_pixels), size=5000, replace=False)
+        skin_pixels = skin_pixels[idx]
 
     # Predict season using the trained SVM (CIE Lab features)
     season = predict_season(skin_pixels)

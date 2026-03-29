@@ -47,7 +47,8 @@ def rgb_pixels_to_lab_mean(pixels_rgb: np.ndarray) -> np.ndarray:
     a = lab_opencv[:, 1].astype(float) - 128.0
     b = lab_opencv[:, 2].astype(float) - 128.0
 
-    return np.array([L.mean(), a.mean(), b.mean()], dtype=np.float32)
+    # Use median — more robust to highlights and shadows than mean
+    return np.array([np.median(L), np.median(a), np.median(b)], dtype=np.float32)
 
 
 def predict_season(pixels_rgb: np.ndarray) -> str:
