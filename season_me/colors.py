@@ -45,22 +45,22 @@ SEASON_PALETTES: dict[str, list[dict]] = {
 
 SEASON_DESCRIPTIONS: dict[str, str] = {
     "Spring": (
-        "Warm, light, and clear — your natural coloring has golden undertones "
+        "Warm, light, and clear -your natural coloring has golden undertones "
         "and a fresh, bright quality. You shine in warm, clear colors that echo "
         "the freshness of spring."
     ),
     "Summer": (
-        "Cool, light, and muted — your natural coloring has pink or blue "
+        "Cool, light, and muted -your natural coloring has pink or blue "
         "undertones with a soft, blended quality. You look best in dusty, muted "
         "tones that complement your delicate clarity."
     ),
     "Autumn": (
-        "Warm, deep, and muted — your natural coloring has golden or earthy "
+        "Warm, deep, and muted -your natural coloring has golden or earthy "
         "undertones with rich, complex tones. Rich, earthy, and muted shades "
         "that echo autumn foliage suit you perfectly."
     ),
     "Winter": (
-        "Cool, deep, and clear — your natural coloring has pink or blue "
+        "Cool, deep, and clear -your natural coloring has pink or blue "
         "undertones with high contrast. Bold, clear, and icy colors that create "
         "sharp contrast are your power palette."
     ),

@@ -17,7 +17,7 @@ app = typer.Typer(
     help=_HELP,
     add_completion=False,
 )
-console = Console()
+console = Console(highlight=False, emoji=False)
 
 _SEASON_STYLES: dict[str, str] = {
     "Spring": "bold yellow",
@@ -88,7 +88,7 @@ def run(
     table.add_column("Hex Code")
 
     for entry in result.palette:
-        swatch = Text("██", style=entry["hex"])
+        swatch = Text("  ##  ", style=entry["hex"])
         table.add_row(swatch, entry["name"], entry["hex"])
 
     console.print()
@@ -98,3 +98,7 @@ def run(
 
 def main() -> None:
     app()
+
+
+if __name__ == "__main__":
+    main()
